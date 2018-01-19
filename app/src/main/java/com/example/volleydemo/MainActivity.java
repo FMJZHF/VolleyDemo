@@ -40,7 +40,77 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //二次封装
+        ((Button) findViewById(R.id.button_get2)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                volley_Get_JsonObjectRequest2();
+            }
+        });
+        ((Button) findViewById(R.id.button_post2)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                volley_Post_JsonObjectRequest2();
+            }
+        });
+
     }
+
+    //========================二次封装==START===================================
+    private void volley_Get_JsonObjectRequest2() {
+        String url = "http://apis.juhe.cn/mobile/get?phone=13429667914&key=335adcc4e891ba4e4be6d7534fd54c5d";
+
+        VolleyRequest.RequestGet(this, url, "abcGet", new VolleyInterface(this, VolleyInterface.mListener, VolleyInterface.mErrorListener) {
+            @Override
+            public void onMySuccess(String result) {
+                toast("请求成功：" + result);
+            }
+
+            @Override
+            public void onMyError(VolleyError error) {
+                toast("请求失败：" + error.toString());
+            }
+        });
+    }
+
+    private void volley_Post_JsonObjectRequest2() {
+        String url = "http://apis.juhe.cn/mobile/get?";
+
+        Map<String, String> hashMap = new HashMap<String, String>();
+        hashMap.put("phone", "13429667914");
+        hashMap.put("key", "335adcc4e891ba4e4be6d7534fd54c5d");
+
+        VolleyRequest.RequestPost(this, url, "abcPost", hashMap, new VolleyInterface(this, VolleyInterface.mListener, VolleyInterface.mErrorListener) {
+            @Override
+            public void onMySuccess(String result) {
+                toast("请求成功：" + result);
+            }
+
+            @Override
+            public void onMyError(VolleyError error) {
+                toast("请求失败：" + error.toString());
+            }
+        });
+
+
+//        JSONObject jsonObject = new JSONObject(hashMap);  // 将map转为jsonObject对象
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject jsonObject) {
+//                toast("请求成功：" + jsonObject.toString());
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError volleyError) {
+//                toast("请求失败：" + volleyError.toString());
+//            }
+//        });
+//        jsonObjectRequest.setTag("abcPost"); //设置标签
+//        MyApplication.getHttpQueues().add(jsonObjectRequest);//添加到全局队列中
+    }
+
+
+    //========================二次封装==END===================================
 
     private void volley_Post_StringRequest() {
         String url = "http://apis.juhe.cn/mobile/get?";
@@ -75,8 +145,6 @@ public class MainActivity extends AppCompatActivity {
         hashMap.put("phone", "13429667914");
         hashMap.put("key", "335adcc4e891ba4e4be6d7534fd54c5d");
         JSONObject jsonObject = new JSONObject(hashMap);  // 将map转为jsonObject对象
-
-
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -98,13 +166,13 @@ public class MainActivity extends AppCompatActivity {
         StringRequest request = new StringRequest(Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) { // 请求成功回调
-                toast("请求成功："+s);
+                toast("请求成功：" + s);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) { // 请求失败回调
 
-                toast("请求失败："+volleyError.toString());
+                toast("请求失败：" + volleyError.toString());
             }
         });
         request.setTag("abcGet"); //设置标签
@@ -128,10 +196,15 @@ public class MainActivity extends AppCompatActivity {
         jsonObjectRequest.setTag("abcGet"); //设置标签
         MyApplication.getHttpQueues().add(jsonObjectRequest);//添加到全局队列中
     }
-
+    //===========================================================
 
     private void toast(String string) {
         Toast.makeText(MainActivity.this, string, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        MyApplication.getHttpQueues().cancelAll("abcPost");//通过指定的tag值，将指定的队列全部关闭
+    }
 }
