@@ -1,5 +1,6 @@
 package com.example.volleydemo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -51,6 +52,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 volley_Post_JsonObjectRequest2();
+            }
+        });
+
+        //请求网络图片
+        ((Button) findViewById(R.id.get_net_image)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this , ImageActivity.class));
             }
         });
 
